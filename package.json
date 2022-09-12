@@ -1,19 +1,15 @@
 {
-  "name": "server",
+  "name": "hospitoque",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/netlify-lambda serve server.js",
-    "build": "./node_modules/.bin/netlify-lambda build server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
-    "format": "prettier --single-quote --check .",
-    "prepare": "cd ../ && husky install server/.husky"
+    "start": "./node_modules/.bin/netlify-lambda serve src",
+    "build": "./node_modules/.bin/netlify-lambda build src"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.18.1",
     "mongodb": "^3.6.6",
     "netlify-lambda": "^2.0.15",
     "serverless-http": "^3.0.2"
@@ -22,7 +18,7 @@
     "eslint": "^8.0.0",
     "husky": "^7.0.2",
     "lint-staged": "^11.2.3",
-    "nodemon": "^2.0.12",
+    "nodemon": "^2.0.19",
     "prettier": "^2.4.1"
   },
   "husky": {
