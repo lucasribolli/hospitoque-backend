@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
   res.json({
     'hello': 'hi!'
   });
-});
+});''
 
 // This section will help you get a list of all the records.
 router.route('/listings').get(async function (_req, res) {
