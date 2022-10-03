@@ -14,24 +14,33 @@ router.get('/', (req, res) => {
   res.json({
     'hello': 'hi!'
   });
-});''
+});
+
+const COLLECTION_MEDICINE = "medicines";
 
 // This section will help you get a list of all the records.
-router.route('/listings').get(async function (_req, res) {
+router.route('/add-medicine').post(async function (_req, res) {
+  const medicine = {
+    name: req.body.name,
+    manufacturer: manufacturer,
+    composition: req.body.composition,
+    variant: req.body.variant,
+    creationDate: new Date()
+  };
+  
   const client = getClient();
   client.connect(async function (_) {
-    const collection = client.db(HOSPITOQUE_DB_NAME).collection("matches");
-    collection.find({})
-      .limit(50)
-      .toArray(function (err, result) {
-        if (err) {
-          res.status(500).send('Error fetching listings! ' + err);
-        } else {
-          res.json(result);
-        }
-      });
+    const collection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_MEDICINE);
+    collection.insertOne(medicine, function (err, result) {
+      if (err) {
+        res.status(400).send('Error inserting medicine!');
+      } else {
+        console.log(`Added a new medicine with id ${result.insertedId}`);
+        res.status(204).send();
+      }
     });
-    client.close();
+  });
+  client.close();
 });
 
 function getClient() {
