@@ -25,6 +25,7 @@ router.route('/medicine').post(async function (req, res) {
     manufacturer: req.body.manufacturer,
     composition: req.body.composition,
     variant: req.body.variant,
+    available: req.body.available,
     creationDate: new Date()
   };
   
@@ -43,12 +44,25 @@ router.route('/medicine').post(async function (req, res) {
   client.close();
 });
 
-router.route('/medicine').get(async function (_, res) {
+router.route('/medicine').get(async function (req, res) {
+  var q = req.query.q
   const client = getClient();
   client.connect(async function (_) {
     const collection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_MEDICINE);
     collection
-      .find({})
+      .find({ 
+        $or: [
+          {
+            name: { $regex : q }
+          }, 
+          { 
+            manufacturer: { $regex : q }
+          },
+          {
+            composition: { $regex : q }
+          }
+        ] 
+      })
       .toArray(function (err, result) {
         if (err) {
           res.status(400).send('Error fetching medicine!');
