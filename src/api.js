@@ -46,7 +46,6 @@ router.route('/medicine').post(async function (req, res) {
 
 router.route('/medicine').get(async function (req, res) {
   var q = req.query.q
-  var caseInsensitiveQuery = '/^'+q+'$/i';
   const client = getClient();
   client.connect(async function (_) {
     const collection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_MEDICINE);
@@ -54,13 +53,13 @@ router.route('/medicine').get(async function (req, res) {
       .find({ 
         $or: [
           {
-            name: caseInsensitiveQuery
+            name: { $regex : q }
           }, 
           { 
-            manufacturer: caseInsensitiveQuery
+            manufacturer: { $regex : q }
           },
           {
-            composition: caseInsensitiveQuery
+            composition: { $regex : q }
           }
         ] 
       })
