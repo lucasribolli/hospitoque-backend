@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
 });
 
 const COLLECTION_MEDICINE = 'medicines';
+const COLLECTION_DELETED_MEDICINE = 'deleted-medicines';
 const COLLECTION_USERS = 'users';
 
 router.route('/medicine').post(async function (req, res) {
@@ -53,19 +54,33 @@ router.route('/medicine').delete(async function (req, res) {
   });
   console.log('idsObject: ' + idsObject);
 
-  const deletionRequest = {
+  const idsFilter = {
     _id: { $in: idsObject }
   };
   
   const client = getClient();
   client.connect(async function (_) {
-    const collection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_MEDICINE);
-    collection.deleteMany(deletionRequest, function (err, result) {
-      if (err) {
-        res.status(400).send('Error deleting medicines! ' + err);
-      } else {
-        console.log(`Medicines deleted: ` + result);
-        res.send();
+    const medicineCollection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_MEDICINE);
+
+    medicineCollection.find(idsFilter, function (err, result) {
+      if (!err) {
+        console.log(`Medicines: ` + result);
+
+        const deletedMedicineCollection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_DELETED_MEDICINE);
+        var deletedMedicine = {
+          "medicines": result,
+          "reason": req.body.reason
+        };
+        deletedMedicineCollection.insertMany(deletedMedicine);
+
+        medicineCollection.deleteMany(idsFilter, function (err, result) {
+          if (err) {
+            res.status(400).send('Error deleting medicines! ' + err);
+          } else {
+            console.log(`Medicines deleted: ` + result);
+            res.send();
+          }
+        });
       }
     });
   });
