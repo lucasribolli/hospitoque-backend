@@ -1,6 +1,7 @@
 const express = require('express');
 const serverless = require('serverless-http');
 const cors = require('cors');
+ObjectID = require('mongodb').ObjectID;
 
 const app = express();
 const router = express.Router();
@@ -37,6 +38,33 @@ router.route('/medicine').post(async function (req, res) {
         res.status(400).send('Error inserting medicine!');
       } else {
         console.log(`Added a new medicine with id ${result.insertedId}`);
+        res.send();
+      }
+    });
+  });
+  client.close();
+});
+
+router.route('/medicine').delete(async function (req, res) {
+  const idsString = req.body.ids;
+  console.log('idsString: ' + idsString);
+  const idsObject = idsString.map(function(id) {
+    return new ObjectID(id);
+  });
+  console.log('idsObject: ' + idsObject);
+
+  const deletionRequest = {
+    _id: { $in: idsObject }
+  };
+  
+  const client = getClient();
+  client.connect(async function (_) {
+    const collection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_MEDICINE);
+    collection.deleteMany(deletionRequest, function (err, result) {
+      if (err) {
+        res.status(400).send('Error deleting medicines! ' + err);
+      } else {
+        console.log(`Medicines deleted: ` + result);
         res.send();
       }
     });
