@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
 });
 
 const COLLECTION_MEDICINE = 'medicines';
-const COLLECTION_DELETED_MEDICINE = 'deleted-medicines';
+const COLLECTION_DELETED_MEDICINE = 'deleted_medicines';
 const COLLECTION_USERS = 'users';
 
 router.route('/medicine').post(async function (req, res) {
@@ -62,27 +62,30 @@ router.route('/medicine').delete(async function (req, res) {
   client.connect(async function (_) {
     const medicineCollection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_MEDICINE);
 
-    medicineCollection.find(idsFilter, function (err, idsFilterResult) {
-      if (!err) {
-        console.log(`Medicines: ` + idsFilterResult);
+    medicineCollection.find(idsFilter)
+      .toArray(function (err1, idsFilterResult) {
+        if (!err1) {
+          // TODO idsFilterResult -> [object Object]
+          console.log(`Medicines: ` + Object.prototype.toString.call(idsFilterResult));
 
-        const deletedMedicineCollection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_DELETED_MEDICINE);
-        var deletedMedicine = {
-          "medicines": idsFilterResult,
-          "reason": req.body.reason
-        };
-        deletedMedicineCollection.insert(deletedMedicine);
-
-        medicineCollection.deleteMany(idsObject, function (err, result) {
-          if (err) {
-            res.status(400).send('Error deleting medicines! ' + err);
-          } else {
-            console.log(`Medicines deleted: ` + result);
-            res.send();
-          }
-        });
-      }
-    });
+          const deletedMedicineCollection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_DELETED_MEDICINE);
+          const deletedMedicine = {
+            medicines: idsFilterResult,
+            reason: req.body.reason
+          };
+          deletedMedicineCollection.insertOne(deletedMedicine, function (err2, resultInsertion) {
+            console.log(`Medicines inserted on deleted_medicines: result: ` + resultInsertion + ` err2: ` + err2);
+            medicineCollection.deleteMany(idsFilter, function (err3, result) {
+              if (err3) {
+                res.status(400).send('Error deleting medicines! ' + err3);
+              } else {
+                console.log(`Medicines deleted: ` + result);
+                res.send();
+              }
+            });
+          });
+        }
+      });
   });
   client.close();
 });
