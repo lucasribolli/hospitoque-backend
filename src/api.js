@@ -71,7 +71,7 @@ router.route('/medicine').delete(async function (req, res) {
           "medicines": result,
           "reason": req.body.reason
         };
-        deletedMedicineCollection.insertMany(deletedMedicine);
+        deletedMedicineCollection.insert(deletedMedicine);
 
         medicineCollection.deleteMany(idsFilter, function (err, result) {
           if (err) {
