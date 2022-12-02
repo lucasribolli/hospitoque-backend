@@ -71,7 +71,8 @@ router.route('/medicine').delete(async function (req, res) {
           const deletedMedicineCollection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_DELETED_MEDICINE);
           const deletedMedicine = {
             medicines: idsFilterResult,
-            reason: req.body.reason
+            reason: req.body.reason,
+            date: new Date()
           };
           deletedMedicineCollection.insertOne(deletedMedicine, function (err2, resultInsertion) {
             console.log(`Medicines inserted on deleted_medicines: result: ` + resultInsertion + ` err2: ` + err2);
