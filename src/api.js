@@ -28,6 +28,7 @@ router.route('/medicine').post(async function (req, res) {
     composition: req.body.composition,
     variant: req.body.variant,
     available: req.body.available,
+    expirationDate: req.body.expirationDate,
     creationDate: new Date()
   };
   
