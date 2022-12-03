@@ -69,11 +69,13 @@ router.route('/medicine').delete(async function (req, res) {
           console.log(`Medicines: ` + Object.prototype.toString.call(idsFilterResult));
 
           const deletedMedicineCollection = client.db(HOSPITOQUE_DB_NAME).collection(COLLECTION_DELETED_MEDICINE);
-          const deletedMedicine = {
+          var deletedMedicine = {
             medicines: idsFilterResult,
-            reason: req.body.reason,
             date: new Date()
           };
+          if(req.body.reason != null) {
+            deletedMedicine[reason] = req.body.reason;
+          }
           deletedMedicineCollection.insertOne(deletedMedicine, function (err2, resultInsertion) {
             console.log(`Medicines inserted on deleted_medicines: result: ` + resultInsertion + ` err2: ` + err2);
             medicineCollection.deleteMany(idsFilter, function (err3, result) {
