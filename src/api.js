@@ -75,7 +75,7 @@ router.route('/medicine').delete(async function (req, res) {
             date: new Date()
           };
           if(req.body.reason != null) {
-            deletedMedicine[reason] = req.body.reason;
+            deletedMedicine.reason = req.body.reason;
           }
           deletedMedicineCollection.insertOne(deletedMedicine, function (err2, resultInsertion) {
             console.log(`Medicines inserted on deleted_medicines: result: ` + resultInsertion + ` err2: ` + err2);
